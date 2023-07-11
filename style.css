@@ -1,0 +1,19 @@
+#main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn {
+  margin-top: 20px;
+  width: 400px;
+}
+#file-selector {
+}
+#parseOutput {
+  border: 3px solid blue;
+}
