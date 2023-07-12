@@ -24,7 +24,13 @@
       <input class="btn" type="file" id="file-selector" accept=".xml" />
     </div>
     <div class="buttons">
-      <button id="parseBtn" type="button" class="btn" onclick="loadXMLDoc()">
+      <button
+        id="parseBtn"
+        type="button"
+        class="btn"
+        onclick="loadXMLDoc()"
+        onchange="readFile(this)"
+      >
         Parse
       </button>
     </div>
@@ -39,31 +45,7 @@
           inputBtn.value = "";
           return;
         }
-
-        var inputBtn = document.getElementById("file-selector");
-
-        let file = input.files[0];
-
-        let reader = new FileReader();
-
-        reader.readAsText(file);
-
-        reader.onload = function () {
-          //   console.log(reader.result);
-          var x, i, xmlDoc, txt;
-          xmlDoc = xml.responseXML;
-          txt = "";
-          x = xmlDoc.getElementsByTagName("Vertex");
-          for (i = 0; i < x.length; i++) {
-            txt += x[i].childNodes[0].nodeValue + "<br>";
-          }
-          document.getElementById("parseOutput").innerHTML = txt;
-        };
-
-        reader.onerror = function () {
-          console.log(reader.error);
-        };
-
+        readFile();
         // var xmlhttp = new XMLHttpRequest();
         // xmlhttp.onreadystatechange = function () {
         //   if (this.readyState == 4 && this.status == 200) {
@@ -72,6 +54,48 @@
         //};
         // xmlhttp.open("GET", inputBtn.value, true);
         // xmlhttp.send();
+      }
+      function readFile(input) {
+        var inputBtn = document.getElementById("file-selector");
+        var parseOutput = document.getElementById("parseOutput");
+        let [file] = document.querySelector("input[type=file]").files;
+
+        let reader = new FileReader();
+
+        reader.addEventListener(
+          "load",
+          () => {
+            var txt, parser, xmlDoc;
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(txt, "text/xml");
+
+            var x = xmlDoc.getElementsByTagName("Vertex");
+            for (let i = 0; i < x.length; i++) {
+              txt += x[i].childNodes[0].nodeValue + "<br>";
+            }
+            // parseOutput.innerHTML = txt;
+
+            parseOutput.innerText = txt;
+          },
+          false
+        );
+        if (file) {
+          reader.readAsText(file);
+        }
+        reader.onload = function () {
+          // var x, i, xmlDoc, txt;
+          // xmlDoc = xml.responseXML;
+          // txt = "";
+          // x = xmlDoc.getElementsByTagName("Vertex");
+          // for (i = 0; i < x.length; i++) {
+          //   txt += x[i].childNodes[0].nodeValue + "<br>";
+          // }
+          // document.getElementById("parseOutput").innerHTML = txt;
+        };
+
+        reader.onerror = function () {
+          console.log(reader.error);
+        };
       }
 
       function fileValidation() {
