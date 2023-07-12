@@ -13,8 +13,8 @@
       <canvas
         id="canvas"
         style="border: 3px solid darkblue"
-        width="400px"
-        height="300px"
+        width="800px"
+        height="600px"
       ></canvas>
     </div>
     <div class="buttons">
@@ -39,6 +39,12 @@
     <script>
       var parser, xmlDoc;
 
+      function render(x, y, z) {
+        var _x = x / (z + 1);
+        var _y = y / (z + 1);
+        console.log(_x + " " + _y);
+      }
+
       function loadXMLDoc(input) {
         if (!fileValidation()) {
           alert(".xml Uzantılı Bir Dosya Seçiniz!");
@@ -46,14 +52,6 @@
           return;
         }
         readFile();
-        // var xmlhttp = new XMLHttpRequest();
-        // xmlhttp.onreadystatechange = function () {
-        //   if (this.readyState == 4 && this.status == 200) {
-        //     myFunction(this);
-        //   }
-        //};
-        // xmlhttp.open("GET", inputBtn.value, true);
-        // xmlhttp.send();
       }
       function readFile(input) {
         var inputBtn = document.getElementById("file-selector");
@@ -65,33 +63,47 @@
         reader.addEventListener(
           "load",
           () => {
-            var txt, parser, xmlDoc;
+            var txt = event.target.result,
+              parser,
+              xmlDoc;
+            // console.log(txt);
             parser = new DOMParser();
             xmlDoc = parser.parseFromString(txt, "text/xml");
 
-            var x = xmlDoc.getElementsByTagName("Vertex");
-            for (let i = 0; i < x.length; i++) {
-              txt += x[i].childNodes[0].nodeValue + "<br>";
-            }
-            // parseOutput.innerHTML = txt;
+            const vertex = xmlDoc.getElementsByTagName("Vertex");
+            const line = xmlDoc.getElementsByTagName("Line");
 
-            parseOutput.innerText = txt;
+            var newStr = "";
+
+            for (let i = 0; i < vertex.length; ++i) {
+              newStr +=
+                "Vertex: " +
+                " " +
+                vertex[i].getAttribute("x") +
+                " " +
+                vertex[i].getAttribute("y") +
+                " " +
+                vertex[i].getAttribute("z") +
+                "\n";
+              var x = vertex[i].getAttribute("x");
+              var y = vertex[i].getAttribute("y");
+              var z = vertex[i].getAttribute("z");
+              render(x, y, z);
+            }
+            for (let i = 0; i < line.length; i++) {
+              var vertexId = line[i].getAttribute("from");
+              var vertexId1 = line[i].getAttribute("to");
+              draw(vertexId, vertexId1);
+            }
+
+            parseOutput.innerText = newStr;
           },
           false
         );
         if (file) {
           reader.readAsText(file);
         }
-        reader.onload = function () {
-          // var x, i, xmlDoc, txt;
-          // xmlDoc = xml.responseXML;
-          // txt = "";
-          // x = xmlDoc.getElementsByTagName("Vertex");
-          // for (i = 0; i < x.length; i++) {
-          //   txt += x[i].childNodes[0].nodeValue + "<br>";
-          // }
-          // document.getElementById("parseOutput").innerHTML = txt;
-        };
+        reader.onload = function () {};
 
         reader.onerror = function () {
           console.log(reader.error);
@@ -109,12 +121,15 @@
           return true;
         }
       }
+      function draw(vertexId, vertexId1, _x, _y) {
+        // console.log(vertexId + " " + vertexId1);
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
 
-      var c = document.getElementById("canvas");
-      var ctx = c.getContext("2d");
-      //   ctx.moveTo(0, 0);
-      //   ctx.lineTo(400, 300);
-      //   ctx.stroke();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(vertexId, vertexId1);
+        ctx.stroke();
+      }
     </script>
   </body>
 </html>
