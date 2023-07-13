@@ -87,12 +87,12 @@
               let vertexId = line[i].getAttribute("from");
               let vertexId1 = line[i].getAttribute("to");
 
-              let x1 = vertex[vertexId].getAttribute("x") * 2.5;
-              let y1 = vertex[vertexId].getAttribute("y") * 2.5;
-              let z1 = vertex[vertexId].getAttribute("z") * 2.5;
-              let x2 = vertex[vertexId1].getAttribute("x") * 2.5;
-              let y2 = vertex[vertexId1].getAttribute("y") * 2.5;
-              let z2 = vertex[vertexId1].getAttribute("z") * 2.5;
+              let x1 = vertex[vertexId].getAttribute("x") / 100;
+              let y1 = vertex[vertexId].getAttribute("y") / 100;
+              let z1 = vertex[vertexId].getAttribute("z") / 100;
+              let x2 = vertex[vertexId1].getAttribute("x") / 100;
+              let y2 = vertex[vertexId1].getAttribute("y") / 100;
+              let z2 = vertex[vertexId1].getAttribute("z") / 100;
 
               let f = 10;
               let n = 1;
@@ -102,15 +102,15 @@
               let _z1 = (-f / (f - n)) * z1 - 1;
               let _z2 = (-f / (f - n)) * z2 - 1;
 
-              let _x1 = (S * x1) / _z1;
-              let _y1 = (S * y1) / _z1;
+              let _x1 = x1 / (z1 + 1);
+              let _y1 = y1 / (z1 + 1);
 
-              let _x2 = (S * x2) / _z2;
-              let _y2 = (S * y2) / _z2;
+              let _x2 = x2 / (z2 + 1);
+              let _y2 = y2 / (z2 + 1);
 
               console.log(_x1, _y1, _x2, _y2);
 
-              draw(_x1, _y1, _x2, _y2);
+              draw(_x1 * 250, _y1 * 250, _x2 * 250, _y2 * 250);
             }
 
             parseOutput.innerText = newStr;
