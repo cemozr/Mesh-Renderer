@@ -20,9 +20,7 @@
     <div class="buttons">
       <input id="slider" class="btn" type="range" min="1" max="360" value="1" />
     </div>
-    <!-- <div class="buttons">
-      <input id="sliderX" class="btn" type="range" min="1" max="360" value="1" />
-    </div> -->
+
     <div class="buttons">
       <input class="btn" type="file" id="file-selector" accept=".xml" />
     </div>
@@ -37,7 +35,6 @@
         Parse
       </button>
     </div>
-    <div><p id="parseOutput"></p></div>
 
     <script>
       var fileContent;
@@ -71,9 +68,6 @@
             parser,
             xmlDoc;
 
-          //console.log(event.target.result);
-
-          // console.log(txt);
           parser = new DOMParser();
           xmlDoc = parser.parseFromString(txt, "text/xml");
 
@@ -83,21 +77,11 @@
           var newStr = "";
 
           for (let i = 0; i < vertex.length; ++i) {
-            // newStr +=
-            //   "Vertex: " +
-            //   " " +
-            //   vertex[i].getAttribute("x") +
-            //   " " +
-            //   vertex[i].getAttribute("y") +
-            //   " " +
-            //   vertex[i].getAttribute("z") +
-            //   "\n";
             var x = vertex[i].getAttribute("x");
             var y = vertex[i].getAttribute("y");
             var z = vertex[i].getAttribute("z");
           }
           for (let i = 0; i < line.length; i++) {
-            //console.log("draw");
             let vertexId = line[i].getAttribute("from");
             let vertexId1 = line[i].getAttribute("to");
 
@@ -143,22 +127,6 @@
             let _x2 = newX2 / (newZ2 + 1);
             let _y2 = newY2 / (newZ2 + 1);
 
-            // console.log(_x1, _y1, _x2, _y2);
-
-            // let rotated_x1 =
-            //   _x1 * Math.cos((slider.value * Math.PI) / 180) -
-            //   _y1 * Math.sin((slider.value * Math.PI) / 180);
-            // let rotated_y1 =
-            //   _x1 * Math.sin((slider.value * Math.PI) / 180) +
-            //   _y1 * Math.cos((slider.value * Math.PI) / 180);
-
-            // let rotated_x2 =
-            //   _x2 * Math.cos((slider.value * Math.PI) / 180) -
-            //   _y2 * Math.sin((slider.value * Math.PI) / 180);
-            // let rotated_y2 =
-            //   _x2 * Math.sin((slider.value * Math.PI) / 180) +
-            //   _y2 * Math.cos((slider.value * Math.PI) / 180);
-
             draw(ctx, _x1 * 250, _y1 * 250, _x2 * 250, _y2 * 250);
           }
         };
@@ -173,8 +141,6 @@
         );
         slider.addEventListener("input", drawFunc);
         slider.addEventListener("change", drawFunc);
-        //slider.addEventListener("oninput", drawFunc);
-        //slider.addEventListener("onchange", drawFunc);
 
         if (file) {
           reader.readAsText(file);
@@ -185,10 +151,6 @@
           console.log(reader.error);
         };
       }
-      // function slide(_x1, _x2, _y1, _y2, ctx, c) {
-      //   console.log(slider.value);
-      //   ctx.clearRect(0, 0, c.width, c.height);
-      // }
 
       function fileValidation() {
         var inputBtn = document.getElementById("file-selector");
@@ -201,10 +163,6 @@
           return true;
         }
       }
-      // function slide(_x1, _x2, _y1, _y2, ctx, c) {
-      //   console.log(slider.value);
-      //   ctx.clearRect(0, 0, c.width, c.height);
-      // }
 
       function draw(ctx, _x1, _y1, _x2, _y2) {
         ctx.beginPath();
