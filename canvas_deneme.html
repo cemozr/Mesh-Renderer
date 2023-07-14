@@ -20,6 +20,9 @@
     <div class="buttons">
       <input id="slider" class="btn" type="range" min="1" max="360" value="1" />
     </div>
+    <!-- <div class="buttons">
+      <input id="sliderX" class="btn" type="range" min="1" max="360" value="1" />
+    </div> -->
     <div class="buttons">
       <input class="btn" type="file" id="file-selector" accept=".xml" />
     </div>
@@ -37,6 +40,7 @@
     <div><p id="parseOutput"></p></div>
 
     <script>
+      var fileContent;
       var parser, xmlDoc;
       const slider = document.getElementById("slider");
 
@@ -46,6 +50,7 @@
           inputBtn.value = "";
           return;
         }
+        fileName = event.target;
         readFile();
       }
 
@@ -56,95 +61,121 @@
 
         let reader = new FileReader();
 
+        let drawFunc = () => {
+          var c = document.getElementById("canvas");
+          var ctx = c.getContext("2d");
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, 800, 600);
+
+          var txt = fileContent,
+            parser,
+            xmlDoc;
+
+          //console.log(event.target.result);
+
+          // console.log(txt);
+          parser = new DOMParser();
+          xmlDoc = parser.parseFromString(txt, "text/xml");
+
+          const vertex = xmlDoc.getElementsByTagName("Vertex");
+          const line = xmlDoc.getElementsByTagName("Line");
+
+          var newStr = "";
+
+          for (let i = 0; i < vertex.length; ++i) {
+            // newStr +=
+            //   "Vertex: " +
+            //   " " +
+            //   vertex[i].getAttribute("x") +
+            //   " " +
+            //   vertex[i].getAttribute("y") +
+            //   " " +
+            //   vertex[i].getAttribute("z") +
+            //   "\n";
+            var x = vertex[i].getAttribute("x");
+            var y = vertex[i].getAttribute("y");
+            var z = vertex[i].getAttribute("z");
+          }
+          for (let i = 0; i < line.length; i++) {
+            //console.log("draw");
+            let vertexId = line[i].getAttribute("from");
+            let vertexId1 = line[i].getAttribute("to");
+
+            let x1 = vertex[vertexId].getAttribute("x") / 100;
+            let y1 = vertex[vertexId].getAttribute("y") / 100;
+            let z1 = vertex[vertexId].getAttribute("z") / 100;
+            let x2 = vertex[vertexId1].getAttribute("x") / 100;
+            let y2 = vertex[vertexId1].getAttribute("y") / 100;
+            let z2 = vertex[vertexId1].getAttribute("z") / 100;
+
+            let f = 10;
+            let n = 1;
+            let fov = 90;
+            let S = 1 / Math.tan(((fov / 2) * Math.PI) / 180);
+
+            let angle = (slider.value * Math.PI) / 180;
+            let rotatedX1 = x1 * Math.cos(angle) - y1 * Math.sin(angle);
+            let rotatedX2 = x2 * Math.cos(angle) - y2 * Math.sin(angle);
+            let rotatedY1 = x1 * Math.sin(angle) + y1 * Math.cos(angle);
+            let rotatedY2 = x2 * Math.sin(angle) + y2 * Math.cos(angle);
+            let rotatedZ1 = z1;
+            let rotatedZ2 = z2;
+
+            angle = (90 * Math.PI) / 180;
+
+            let newX1 = rotatedX1;
+            let newX2 = rotatedX2;
+            let newY1 =
+              rotatedY1 * Math.cos(angle) - rotatedZ1 * Math.sin(angle);
+            let newY2 =
+              rotatedY2 * Math.cos(angle) - rotatedZ2 * Math.sin(angle);
+            let newZ1 =
+              rotatedY1 * Math.sin(angle) + rotatedZ1 * Math.cos(angle);
+            let newZ2 =
+              rotatedY2 * Math.sin(angle) + rotatedZ2 * Math.cos(angle);
+
+            let _z1 = (-f / (f - n)) * newZ1 - 1;
+            let _z2 = (-f / (f - n)) * newZ2 - 1;
+
+            let _x1 = newX1 / (newZ1 + 1);
+            let _y1 = newY1 / (newZ1 + 1);
+
+            let _x2 = newX2 / (newZ2 + 1);
+            let _y2 = newY2 / (newZ2 + 1);
+
+            // console.log(_x1, _y1, _x2, _y2);
+
+            // let rotated_x1 =
+            //   _x1 * Math.cos((slider.value * Math.PI) / 180) -
+            //   _y1 * Math.sin((slider.value * Math.PI) / 180);
+            // let rotated_y1 =
+            //   _x1 * Math.sin((slider.value * Math.PI) / 180) +
+            //   _y1 * Math.cos((slider.value * Math.PI) / 180);
+
+            // let rotated_x2 =
+            //   _x2 * Math.cos((slider.value * Math.PI) / 180) -
+            //   _y2 * Math.sin((slider.value * Math.PI) / 180);
+            // let rotated_y2 =
+            //   _x2 * Math.sin((slider.value * Math.PI) / 180) +
+            //   _y2 * Math.cos((slider.value * Math.PI) / 180);
+
+            draw(ctx, _x1 * 250, _y1 * 250, _x2 * 250, _y2 * 250);
+          }
+        };
+
         reader.addEventListener(
           "load",
           () => {
-            var txt = event.target.result,
-              parser,
-              xmlDoc;
-
-            // console.log(txt);
-            parser = new DOMParser();
-            xmlDoc = parser.parseFromString(txt, "text/xml");
-
-            const vertex = xmlDoc.getElementsByTagName("Vertex");
-            const line = xmlDoc.getElementsByTagName("Line");
-
-            var newStr = "";
-
-            for (let i = 0; i < vertex.length; ++i) {
-              // newStr +=
-              //   "Vertex: " +
-              //   " " +
-              //   vertex[i].getAttribute("x") +
-              //   " " +
-              //   vertex[i].getAttribute("y") +
-              //   " " +
-              //   vertex[i].getAttribute("z") +
-              //   "\n";
-              var x = vertex[i].getAttribute("x");
-              var y = vertex[i].getAttribute("y");
-              var z = vertex[i].getAttribute("z");
-            }
-            for (let i = 0; i < line.length; i++) {
-              let vertexId = line[i].getAttribute("from");
-              let vertexId1 = line[i].getAttribute("to");
-
-              let x1 = vertex[vertexId].getAttribute("x") / 100;
-              let y1 = vertex[vertexId].getAttribute("y") / 100;
-              let z1 = vertex[vertexId].getAttribute("z") / 100;
-              let x2 = vertex[vertexId1].getAttribute("x") / 100;
-              let y2 = vertex[vertexId1].getAttribute("y") / 100;
-              let z2 = vertex[vertexId1].getAttribute("z") / 100;
-
-              let f = 10;
-              let n = 1;
-              let fov = 90;
-              let S = 1 / Math.tan(((fov / 2) * Math.PI) / 180);
-
-              let _z1 = (-f / (f - n)) * z1 - 1;
-              let _z2 = (-f / (f - n)) * z2 - 1;
-
-              let _x1 = x1 / (z1 + 1);
-              let _y1 = y1 / (z1 + 1);
-
-              let _x2 = x2 / (z2 + 1);
-              let _y2 = y2 / (z2 + 1);
-
-              // console.log(_x1, _y1, _x2, _y2);
-
-              let rotated_x1 =
-                _x1 * Math.cos((slider.value * Math.PI) / 180) -
-                _y1 * Math.sin((slider.value * Math.PI) / 180);
-              let rotated_y1 =
-                _x1 * Math.sin((slider.value * Math.PI) / 180) +
-                _y1 * Math.cos((slider.value * Math.PI) / 180);
-
-              let rotated_x2 =
-                _x2 * Math.cos((slider.value * Math.PI) / 180) -
-                _y2 * Math.sin((slider.value * Math.PI) / 180);
-              let rotated_y2 =
-                _x2 * Math.sin((slider.value * Math.PI) / 180) +
-                _y2 * Math.cos((slider.value * Math.PI) / 180);
-
-              draw(
-                rotated_x1 * 250,
-                rotated_y1 * 250,
-                rotated_x2 * 250,
-                rotated_y2 * 250
-              );
-
-              // slider.addEventListener(oninput, function () {
-              //   ctx.clearRect(0, 0, c.width, c.height);
-              //   console.log(slider.value);
-              // });
-              // slider.addEventListener(onchange, function () {
-              //   ctx.clearRect(0, 0, c.width, c.height);
-              // });
-            }
+            fileContent = event.target.result;
+            drawFunc();
           },
           false
         );
+        slider.addEventListener("input", drawFunc);
+        slider.addEventListener("change", drawFunc);
+        //slider.addEventListener("oninput", drawFunc);
+        //slider.addEventListener("onchange", drawFunc);
+
         if (file) {
           reader.readAsText(file);
         }
@@ -174,13 +205,11 @@
       //   console.log(slider.value);
       //   ctx.clearRect(0, 0, c.width, c.height);
       // }
-      function draw(rotated_x1, rotated_y1, rotated_x2, rotated_y2) {
-        var c = document.getElementById("canvas");
-        var ctx = c.getContext("2d");
 
+      function draw(ctx, _x1, _y1, _x2, _y2) {
         ctx.beginPath();
-        ctx.moveTo(rotated_x1 + 400, rotated_y1 + 300);
-        ctx.lineTo(rotated_x2 + 400, rotated_y2 + 300);
+        ctx.moveTo(_x1 + 400, _y1 + 300);
+        ctx.lineTo(_x2 + 400, _y2 + 300);
         ctx.stroke();
         ctx.closePath();
       }
